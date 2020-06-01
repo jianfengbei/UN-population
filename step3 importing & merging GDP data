@@ -1,0 +1,25 @@
+#check directory
+import os
+#os.getcwd()
+os.chdir('/Users/jianfengbei/Google Drive/2020 study/2020 Python codes/00 United Nation population data')
+
+import pandas as pd
+import numpy as np
+gdp_raw=pd.read_csv('UNdata_GDP_Export_20200530_092907006.csv')
+
+#check 
+gdp_raw.head()
+gdp_raw.isnull() #check NaN
+gdp_raw.isnull().sum()
+
+gdp_raw.dtypes
+
+gdp_raw.columns
+gdp_raw.drop('Item',axis='columns',inplace=True)
+gdp_raw.columns=['country_name', 'year','Gross Domestic Product (GDP)']
+
+# merge with population data
+country1950_2100=pd.read_csv('country1950_2100.csv',index_col=0)
+df1950_2100=pd.merge(gdp_raw,country1950_2100,on=['country_name','year'])
+df1950_2100.to_csv('df1970_2015.csv')
+
