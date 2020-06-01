@@ -1,0 +1,31 @@
+#check & change directory
+import os
+#os.getcwd()
+os.chdir('/Users/jianfengbei/Google Drive/2020 study/2020 Python codes/00 United Nation population data')
+
+import pandas as pd
+import numpy as np
+
+lifeExp_raw=pd.read_csv('UNdata_LifeExp_Export_20200530_092543484.csv')
+
+#check 
+lifeExp_raw.head()
+lifeExp_raw.isnull() #check NaN
+lifeExp_raw.isnull().sum()
+
+lifeExp_raw.dtypes
+
+lifeExp_raw.columns
+lifeExp_raw.drop('Variant',axis='columns',inplace=True)
+lifeExp_raw.columns=['country_name', 'year','life_expectancy']
+
+     #convert year values and type
+lifeExp_raw['year']=lifeExp_raw['year'].str[5:].astype('float')
+
+
+## merge with pop+GDP
+df1950_2100=pd.read_csv('df1970_2015.csv',index_col=0)
+
+df1950_2100=pd.merge(lifeExp_raw,df1950_2100,on=['country_name','year'])
+
+df1950_2100.to_csv('df1950_2100.csv')
