@@ -1,0 +1,41 @@
+import os
+
+os.chdir('/Users/jianfengbei/Google Drive/2020 study/2020 Python codes/00 United Nation population data')
+
+#import data
+pop_1950='TotalPopSex-20200508024402.xlsx'
+df1950=pd.read_excel(pop_1950, sheet_name='Data', skiprows=1, header=0, index_col=None)
+
+       # drop useless columns:'Sex', 'Note'
+df1950.drop(['ISO 3166-1 numeric code','Sex', 'Note'],axis='columns',inplace=True)
+df1950.head()
+
+       #show all the columns - setting
+pd.set_option('display.max_columns',None)
+
+       #remove duplicate spaces in 'Location':
+df1950['Location']=df1950.Location.str.lstrip()
+
+# change selected column names
+df1950=df1950.rename(columns={'Location':'country_name'})
+
+       # right join between df1950 and de2100:
+country2100=pd.read_csv('country2100.csv')
+df1950_2100=pd.merge(df1950,country2100,on='country_name')
+df1950_2100.drop(['Unnamed: 0'],axis='columns',inplace=True)
+df1950_2100.notnull().sum()
+
+df1950_2100=df1950_2100[['country_name','country_code','continent',1950,1955,1960,1965,1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,
+                         '2020','2025','2030','2035','2040','2045','2050','2055','2060','2065','2070','2075','2080','2085','2090','2095','2100']]
+
+      # melt dataframe to a tidied data
+year=[1950,1955,1960,1965,1970,1975,1980,1985,1990,1995,2000,2005,2010,2015,'2020','2025',
+      '2030','2035','2040','2045','2050','2055','2060','2065','2070','2075','2080','2085','2090','2095','2100']
+df1950_2100=pd.melt(frame=df1950_2100,id_vars=['country_name','continent'],value_vars=year,var_name='year',value_name='population')
+df1950_2100.sort_values(['country_name','continent','year'],inplace=True)
+
+             #reset index
+df1950_2100=df1950_2100.reset_index(drop=True)
+df1950_2100.head()
+
+df1950_2100.to_csv('country1950_2100.csv')
